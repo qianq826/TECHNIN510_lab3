@@ -25,7 +25,7 @@ cur.execute(
 class Prompt:
     title: str
     prompt: str
-    is_favorite: bool
+    is_favorite: bool = False
     
     created_at: str = None
 
@@ -35,21 +35,21 @@ def prompt_form(prompt=Prompt("","")):
     """
     with st.form(key="prompt_form", clear_on_submit=True):
         title = st.text_input("Title", value=prompt.title)
-        prompt = st.text_area("Prompt", height=200, value=prompt.prompt)
+        prompt_content = st.text_area("Prompt", height=200, value=prompt.prompt)
         is_favorite = st.checkbox("favourite", value= prompt.is_favorite)
 
 
 
         submitted = st.form_submit_button("Submit")
         if submitted:
-            return Prompt(title, prompt, is_favorite)
+            return Prompt(title, prompt_content, is_favorite)
 
 st.title("Promptbase")
 st.subheader("A simple app to store and retrieve prompts")
 
 prompt = prompt_form()
 if prompt:
-    cur.execute("INSERT INTO prompts (title, prompt) VALUES (%s, %s)", (prompt.title, prompt.prompt,))
+    cur.execute("INSERT INTO prompts (title, prompt) VALUES (%s, %s,%s)", (prompt.title, prompt.prompt,prompt.is_favorite))
     con.commit()
     st.success("Prompt added successfully!")
 
