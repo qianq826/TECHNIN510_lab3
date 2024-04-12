@@ -6,6 +6,7 @@ import streamlit as st
 import psycopg2
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 @dataclass
@@ -71,6 +72,7 @@ def display_prompts(cur):
                 cur.execute("UPDATE prompts SET is_favorite = NOT is_favorite WHERE id = %s", (p[0],))
                 con.commit()
                 st.experimental_rerun()
+
 
 def edit_prompt(prompt, cur, con):
     edited_prompt = prompt_form(prompt=Prompt(prompt[1], prompt[2], prompt[3]))
