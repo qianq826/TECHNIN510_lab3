@@ -49,30 +49,24 @@ def prompt_form(prompt=None):
             return Prompt(title, prompt_content, is_favorite)
 
 def display_prompts(cur):
-    cur.execute("SELECT * FROM prompts ORDER BY created_at DESC")  # Default sort by created date 
-    prompts = cur.fetchall()
-    # TODO: Add a search bar
     search_query = st.text_input("Search")
-    # TODO: Add a sort by date
-    sort_order = st.radio("Sort by", options = ["Created date", "Title"])
+    sort_order = st.radio("Sort by", options=["Created Date", "Title"])
     sort_order_sql = "created_at DESC" if sort_order == "Created Date" else "title ASC"
-    
+
+    # SQL query to select prompts based on search and sort
     sql = f"SELECT * FROM prompts WHERE title LIKE %s ORDER BY {sort_order_sql}"
     cur.execute(sql, ('%' + search_query + '%',))
     prompts = cur.fetchall()
 
-
     for p in prompts:
         with st.expander(f"{p[1]} (created on {p[5]})"):
             st.code(p[2])
-            # TODO: Add a edit function
             if st.button("Edit", key=f"edit-{p[0]}"):
-                edit_prompt(p,cur,con)
+                edit_prompt(p, cur, con)
             if st.button("Delete", key=f"del-{p[0]}"):
                 cur.execute("DELETE FROM prompts WHERE id = %s", (p[0],))
                 con.commit()
-                st.rerun()
-            # TODO: Add favorite button
+                st.experimental_rerun()
             if st.button("Favorite", key=f"fav-{p[0]}"):
                 cur.execute("UPDATE prompts SET is_favorite = NOT is_favorite WHERE id = %s", (p[0],))
                 con.commit()
